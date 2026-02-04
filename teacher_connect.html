@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Compass | Connecting Classrooms Through Art</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --sun-yellow: #F7B32B;
+            --earth-terracotta: #D64933;
+            --sky-blue: #1E96FC;
+            --leaf-green: #2D936C;
+            --warm-cream: #FFF8F0;
+            --deep-navy: #0A1628;
+            --soft-shadow: rgba(10, 22, 40, 0.08);
+            --danger: #dc3545;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Source Sans 3', -apple-system, sans-serif;
+            background: var(--warm-cream);
+            color: var(--deep-navy);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(247, 179, 43, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(30, 150, 252, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 90%, rgba(214, 73, 51, 0.06) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 600; }
+
+
+
+
+
+
+
+nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 248, 240, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(10, 22, 40, 0.05);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--deep-navy);
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            width: 40px; height: 40px;
+            background: conic-gradient(var(--sun-yellow) 0deg 90deg, var(--earth-terracotta) 90deg 180deg, var(--sky-blue) 180deg 270deg, var(--leaf-green) 270deg 360deg);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px; height: 12px;
+            background: var(--warm-cream);
+            border-radius: 50%;
+        }
+
+        .logo-text { font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 700; }
+
+        .nav-links { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
+
+        .nav-links a, .nav-links button {
+            text-decoration: none;
+            color: var(--deep-navy);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .nav-links a:hover, .nav-links button:hover { color: var(--earth-terracotta); }
+
+        .nav-btn {
+            padding: 0.5rem 1.25rem;
+            background: var(--earth-terracotta) !important;
+            color: white !important;
+            border-radius: 25px;
+        }
+
+        .nav-btn:hover { background: #c13d28 !important; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.75rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--earth-terracotta);
+            color: white;
+            box-shadow: 0 4px 20px rgba(214, 73, 51, 0.3);
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(214, 73, 51, 0.4); }
+
+        .btn-secondary {
+            background: white;
+            color: var(--deep-navy);
+            border: 2px solid rgba(10, 22, 40, 0.1);
+        }
+
+        .btn-secondary:hover { border-color: var(--sky-blue); color: var(--sky-blue); }
+
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+
+
+
+
+
+
+
+
+
+
+
+.hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+        }
+
+        .hero-content { max-width: 800px; text-align: center; }
+
+        .hero h1 { font-size: clamp(2.5rem, 6vw, 4rem); line-height: 1.15; margin-bottom: 1.5rem; }
+        .hero h1 .highlight-yellow { color: var(--sun-yellow); }
+        .hero h1 .highlight-blue { color: var(--sky-blue); }
+
+        .hero p { font-size: 1.25rem; color: rgba(10, 22, 40, 0.7); max-width: 600px; margin: 0 auto 2.5rem; }
+
+        .cta-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+        .hero-decoration { position: absolute; pointer-events: none; }
+
+        .deco-1 { top: 15%; left: 10%; width: 60px; height: 60px; background: var(--sun-yellow); border-radius: 8px; transform: rotate(15deg); opacity: 0.6; animation: float 6s ease-in-out infinite; }
+        .deco-2 { top: 25%; right: 12%; width: 40px; height: 40px; background: var(--sky-blue); border-radius: 50%; opacity: 0.5; animation: float 5s ease-in-out infinite 1s; }
+        .deco-3 { bottom: 20%; left: 15%; width: 50px; height: 50px; background: var(--leaf-green); clip-path: polygon(50% 0%, 100% 100%, 0% 100%); opacity: 0.4; animation: float 7s ease-in-out infinite 0.5s; }
+        .deco-4 { bottom: 30%; right: 10%; width: 35px; height: 35px; background: var(--earth-terracotta); border-radius: 4px; transform: rotate(-10deg); opacity: 0.5; animation: float 5.5s ease-in-out infinite 1.5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(15deg); }
+            50% { transform: translateY(-20px) rotate(15deg); }
+        }
+
+        .page { display: none; min-height: 100vh; padding-top: 80px; }
+        .page.active { display: block; }
+
+        section { padding: 4rem 2rem; }
+
+        .section-title { text-align: center; margin-bottom: 2.5rem; }
+        .section-title h2 { font-size: clamp(1.75rem, 4vw, 2.5rem); margin-bottom: 0.75rem; }
+        .section-title p { color: rgba(10, 22, 40, 0.6); max-width: 500px; margin: 0 auto; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10, 22, 40, 0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: white;
+            border-radius: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(10, 22, 40, 0.3);
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(10, 22, 40, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 { font-size: 1.5rem; }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: rgba(10, 22, 40, 0.5);
+        }
+
+        .modal-close:hover { color: var(--deep-navy); }
+
+        .modal-body { padding: 2rem; }
+
+
+
+
+
+
+
+
+
+
+
+
+.form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--deep-navy); }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid rgba(10, 22, 40, 0.1);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus { outline: none; border-color: var(--sky-blue); }
+
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-hint { font-size: 0.85rem; color: rgba(10, 22, 40, 0.5); margin-top: 0.25rem; }
+
+        .alert { padding: 1rem 1.25rem; border-radius: 12px; margin-bottom: 1rem; }
+        .alert-error { background: rgba(220, 53, 69, 0.1); color: var(--danger); border: 1px solid rgba(220, 53, 69, 0.2); }
+        .alert-success { background: rgba(45, 147, 108, 0.1); color: var(--leaf-green); border: 1px solid rgba(45, 147, 108, 0.2); }
+
+        .dashboard { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid rgba(10, 22, 40, 0.1);
+        }
+
+        .partnership-info { display: flex; align-items: center; gap: 1rem; }
+
+        .partnership-avatar {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--sky-blue), var(--leaf-green));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.75rem;
+        }
+
+        .partnership-details h2 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+        .partnership-details p { color: rgba(10, 22, 40, 0.6); font-size: 0.9rem; }
+
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 350px; gap: 2rem; }
+        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+        .messages-panel {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 30px var(--soft-shadow);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .messages-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(10, 22, 40, 0.1); }
+        .messages-header h3 { font-size: 1.1rem; }
+
+        .messages-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message { max-width: 85%; padding: 1rem; border-radius: 16px; }
+        .message.sent { align-self: flex-end; background: var(--sky-blue); color: white; border-bottom-right-radius: 4px; }
+        .message.received { align-self: flex-start; background: rgba(10, 22, 40, 0.05); border-bottom-left-radius: 4px; }
+        .message-meta { font-size: 0.75rem; opacity: 0.7; margin-top: 0.5rem; }
+        .message.sent .message-meta { text-align: right; }
+        .message-image { max-width: 100%; border-radius: 12px; margin-bottom: 0.5rem; cursor: pointer; }
+
+        .message-input-area {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(10, 22, 40, 0.1);
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-end;
+        }
+
+        .message-input-wrapper { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+
+        .message-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid rgba(10, 22, 40, 0.1);
+            border-radius: 24px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: none;
+            min-height: 48px;
+            max-height: 120px;
+        }
+
+        .message-input:focus { outline: none; border-color: var(--sky-blue); }
+
+
+
+
+
+
+
+.icon-btn {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .icon-btn.upload { background: rgba(10, 22, 40, 0.05); color: var(--deep-navy); }
+        .icon-btn.upload:hover { background: rgba(10, 22, 40, 0.1); }
+        .icon-btn.send { background: var(--earth-terracotta); color: white; }
+        .icon-btn.send:hover { background: #c13d28; }
+
+        .image-preview { position: relative; display: inline-block; }
+        .image-preview img { max-height: 80px; border-radius: 8px; }
+        .image-preview .remove-image {
+            position: absolute; top: -8px; right: -8px;
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            background: var(--danger);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 30px var(--soft-shadow);
+        }
+
+        .sidebar-card h3 { font-size: 1.1rem; margin-bottom: 1rem; }
+
+        .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .gallery-item:hover { transform: scale(1.05); }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        .partner-info-item { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid rgba(10, 22, 40, 0.05); }
+        .partner-info-item:last-child { border-bottom: none; }
+        .partner-info-label { color: rgba(10, 22, 40, 0.6); font-size: 0.9rem; }
+        .partner-info-value { font-weight: 500; }
+
+        .empty-state { text-align: center; padding: 3rem 1rem; color: rgba(10, 22, 40, 0.5); }
+        .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+        .loading { display: flex; align-items: center; justify-content: center; padding: 2rem; }
+        .spinner { width: 40px; height: 40px; border: 3px solid rgba(10, 22, 40, 0.1); border-top-color: var(--sky-blue); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .waiting-state { text-align: center; padding: 4rem 2rem; max-width: 500px; margin: 0 auto; }
+        .waiting-icon { width: 120px; height: 120px; margin: 0 auto 2rem; background: linear-gradient(135deg, var(--sun-yellow), var(--earth-terracotta)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .waiting-state h2 { margin-bottom: 1rem; }
+        .waiting-state p { color: rgba(10, 22, 40, 0.6); margin-bottom: 0.5rem; }
+
+        .access-code-display { background: rgba(10, 22, 40, 0.05); padding: 1rem 2rem; border-radius: 12px; margin: 2rem 0; display: inline-block; }
+        .access-code-display span { font-family: monospace; font-size: 1.5rem; font-weight: 700; letter-spacing: 0.2em; color: var(--sky-blue); }
+
+        .lightbox { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 22, 40, 0.95); z-index: 300; align-items: center; justify-content: center; padding: 2rem; }
+        .lightbox.active { display: flex; }
+        .lightbox img { max-width: 90%; max-height: 90%; border-radius: 12px; }
+        .lightbox-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: white; font-size: 2rem; cursor: pointer; }
+
+        .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; max-width: 1100px; margin: 0 auto; }
+        .step { padding: 2rem; border-radius: 20px; background: white; box-shadow: 0 4px 20px var(--soft-shadow); }
+        .step:hover { transform: translateY(-5px); }
+        .step-number { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 1.25rem; }
+        .step:nth-child(1) .step-number { background: var(--sun-yellow); }
+        .step:nth-child(2) .step-number { background: var(--earth-terracotta); }
+        .step:nth-child(3) .step-number { background: var(--sky-blue); }
+        .step:nth-child(4) .step-number { background: var(--leaf-green); }
+        .step h3 { font-size: 1.25rem; margin-bottom: 0.75rem; }
+        .step p { color: rgba(10, 22, 40, 0.7); font-size: 0.95rem; }
+
+        .school-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; max-width: 900px; margin: 0 auto; }
+        .school-card { background: white; border-radius: 24px; padding: 2.5rem; box-shadow: 0 4px 30px var(--soft-shadow); position: relative; overflow: hidden; }
+        .school-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; }
+        .school-card.us::before { background: linear-gradient(90deg, var(--sky-blue), var(--leaf-green)); }
+        .school-card.global::before { background: linear-gradient(90deg, var(--sun-yellow), var(--earth-terracotta)); }
+        .school-card h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .school-card ul { list-style: none; margin: 1.5rem 0; }
+        .school-card li { padding: 0.5rem 0; padding-left: 1.75rem; position: relative; color: rgba(10, 22, 40, 0.8); }
+        .school-card li::before { content: '✓'; position: absolute; left: 0; color: var(--leaf-green); font-weight: bold; }
+
+        footer { background: var(--deep-navy); color: white; padding: 3rem 2rem 2rem; margin-top: 4rem; }
+        .footer-content { max-width: 1100px; margin: 0 auto; }
+        .footer-brand p { color: rgba(255, 255, 255, 0.6); max-width: 300px; margin-top: 1rem; font-size: 0.9rem; }
+        .footer-brand .logo { color: white; }
+        .footer-bottom { max-width: 1100px; margin: 2rem auto 0; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; color: rgba(255, 255, 255, 0.4); font-size: 0.85rem; }
+
+        @media (max-width: 768px) {
+            nav { padding: 1rem; }
+            .nav-links a:not(.nav-btn) { display: none; }
+            .hero { padding: 6rem 1.5rem 3rem; }
+            .hero-decoration { display: none; }
+            section { padding: 3rem 1.5rem; }
+            .dashboard { padding: 1rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .messages-panel { height: 500px; }
+        }
+
+
+
+/* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 99;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(10, 22, 40, 0.15);
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .language-selector select {
+            padding: 0.5rem 1rem;
+            border: 2px solid rgba(10, 22, 40, 0.1);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: white;
+            cursor: pointer;
+            min-width: 140px;
+        }
+
+        .language-selector select:focus {
+            outline: none;
+            border-color: var(--sky-blue);
+        }
+
+        .language-selector::before {
+            content: '🌐';
+            font-size: 1.25rem;
+            padding-left: 0.5rem;
+        }
+
+        /* Hide Google Translate banner */
+        .goog-te-banner-frame { display: none !important; }
+        body { top: 0 !important; }
+        .skiptranslate { display: none !important; }
+        .goog-te-gadget { font-size: 0 !important; }
+        .goog-te-gadget span { display: none; }
+        .goog-te-gadget-simple { background: transparent !important; border: none !important; }
+
+        @media (max-width: 768px) {
+            .language-selector {
+                top: auto;
+                bottom: 20px;
+                right: 20px;
+                padding: 0.4rem;
+            }
+            .language-selector select {
+                min-width: 120px;
+                font-size: 0.85rem;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+    </style>
+</head>
+
+
+
+
+
+
+<body>
+<!-- Language Selector -->
+    <div class="language-selector">
+        <select id="language-select" onchange="changeLanguage(this.value)">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="pt">Português</option>
+            <option value="fr">Français</option>
+            <option value="sw">Kiswahili</option>
+            <option value="ar">العربية</option>
+            <option value="hi">हिन्दी</option>
+            <option value="zh-CN">中文</option>
+            <option value="am">አማርኛ</option>
+            <option value="ha">Hausa</option>
+        </select>
+    </div>
+
+    <!-- Google Translate Element (hidden) -->
+    <div id="google_translate_element" style="display: none;"></div>
+    <nav>
+        <div class="logo" onclick="showPage('home')">
+            <div class="logo-icon"></div>
+            <span class="logo-text">Color Compass</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" onclick="showPage('home')">Home</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li id="nav-dashboard" style="display: none;"><a href="#" onclick="showPage('dashboard')">Dashboard</a></li>
+            <li id="nav-login"><button class="nav-btn" onclick="openModal('login')">School Login</button></li>
+            <li id="nav-logout" style="display: none;"><button onclick="logout()">Logout</button></li>
+        </ul>
+    </nav>
+
+    <div id="page-home" class="page active">
+        <section class="hero">
+            <div class="hero-decoration deco-1"></div>
+            <div class="hero-decoration deco-2"></div>
+            <div class="hero-decoration deco-3"></div>
+            <div class="hero-decoration deco-4"></div>
+            
+            <div class="hero-content">
+                <h1>Connecting <span class="highlight-yellow">Classrooms</span> Through the <span class="highlight-blue">Power of Art</span></h1>
+                <p>We match US schools with partner classrooms around the world, turning art supply donations into lasting creative connections.</p>
+                <div class="cta-group">
+                    <button class="btn btn-primary" onclick="openModal('register-us')">🇺🇸 US School Sign Up</button>
+                    <button class="btn btn-secondary" onclick="openModal('register-global')">🌍 Global School Sign Up</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" style="background: white;">
+            <div class="section-title">
+                <h2>How It Works</h2>
+                <p>A simple four-step process to connect classrooms across the globe</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Sign Up</h3>
+                    <p>US and Global South schools complete a quick registration form sharing grade levels, interests, and needs.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Get Matched</h3>
+                    <p>We pair your classroom with a partner school based on grade level and artistic interests.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Connect & Create</h3>
+                    <p>Message your partner classroom, share photos of artwork, and build real connections.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Share Impact</h3>
+                    <p>See the direct impact of donations as partner students share what they create with your supplies.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="for-schools">
+            <div class="section-title">
+                <h2>For Schools</h2>
+                <p>Whether you're donating or receiving, every classroom gains something valuable</p>
+            </div>
+            <div class="school-cards">
+                <div class="school-card us">
+                    <h3>🇺🇸 US Schools</h3>
+                    <p>Transform your donation into a meaningful classroom experience.</p>
+                    <ul>
+                        <li>See exactly where your supplies go</li>
+                        <li>Build global awareness in your students</li>
+                        <li>Exchange artwork and messages directly</li>
+                        <li>Integrate into existing curriculum</li>
+                        <li>Perfect for service learning credits</li>
+                    </ul>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="openModal('register-us')">Register Your School</button>
+                </div>
+                <div class="school-card global">
+                    <h3>🌍 Global Partner Schools</h3>
+                    <p>Receive supplies and connect with classrooms who celebrate your creativity.</p>
+                    <ul>
+                        <li>Request specific art supplies you need</li>
+                        <li>Share your students' amazing artwork</li>
+                        <li>Build English language skills naturally</li>
+                        <li>Expose students to different cultures</li>
+                        <li>Mobile-friendly, works offline</li>
+                    </ul>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="openModal('register-global')">Join as Partner School</button>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <div class="logo-icon"></div>
+                        <span class="logo-text">Color Compass</span>
+                    </div>
+                    <p>Connecting classrooms through creativity. Every child deserves art supplies and the chance to share their vision with the world.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p> Color Compass │ Made with ❤️ for creative classrooms everywhere.</p>
+            </div>
+        </footer>
+    </div>
+
+    <div id="page-dashboard" class="page">
+        <div class="dashboard" id="dashboard-content"></div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="modal-overlay" id="modal-login">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>School Login</h2>
+                <button class="modal-close" onclick="closeModal('login')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="login-alert"></div>
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="login-code">Access Code</label>
+                        <input type="text" id="login-code" placeholder="Enter your 8-character code" maxlength="8" style="text-transform: uppercase; letter-spacing: 0.1em; font-family: monospace;" required>
+                        <p class="form-hint">You received this code when you registered your school.</p>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                </form>
+                <p style="text-align: center; margin-top: 1.5rem; color: rgba(10, 22, 40, 0.6);">
+                    Don't have an account? <a href="#" onclick="closeModal('login'); openModal('register-us');" style="color: var(--sky-blue);">Register your school</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-register-us">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🇺🇸 US School Registration</h2>
+                <button class="modal-close" onclick="closeModal('register-us')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="register-us-alert"></div>
+                <form id="register-us-form" onsubmit="handleRegister(event, 'us')">
+                    <div class="form-group">
+                        <label for="us-school-name">School Name *</label>
+                        <input type="text" id="us-school-name" placeholder="Lincoln Elementary School" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="us-teacher-name">Teacher Name *</label>
+                            <input type="text" id="us-teacher-name" placeholder="Ms. Johnson" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="us-teacher-email">Email *</label>
+                            <input type="email" id="us-teacher-email" placeholder="teacher@school.edu" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="us-grade">Grade Level *</label>
+                            <select id="us-grade" required>
+                                <option value="">Select grade...</option>
+                                <option value="K">Kindergarten</option>
+                                <option value="1st">1st Grade</option>
+                                <option value="2nd">2nd Grade</option>
+                                <option value="3rd">3rd Grade</option>
+                                <option value="4th">4th Grade</option>
+                                <option value="5th">5th Grade</option>
+                                <option value="6th">6th Grade</option>
+                                <option value="7th-8th">7th-8th Grade</option>
+                                <option value="9th-12th">High School</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="us-state">State *</label>
+                            <input type="text" id="us-state" placeholder="California" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="us-interests">What do you hope to gain from this partnership?</label>
+                        <textarea id="us-interests" placeholder="We want our students to learn about different cultures and see the impact of their donations..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Register School</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-register-global">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🌍 Global School Registration</h2>
+                <button class="modal-close" onclick="closeModal('register-global')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="register-global-alert"></div>
+                <form id="register-global-form" onsubmit="handleRegister(event, 'global')">
+                    <div class="form-group">
+                        <label for="global-school-name">School Name *</label>
+                        <input type="text" id="global-school-name" placeholder="Escola Esperança" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="global-teacher-name">Teacher Name *</label>
+                            <input type="text" id="global-teacher-name" placeholder="Sr. Santos" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="global-country">Country *</label>
+                            <input type="text" id="global-country" placeholder="Brazil" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="global-teacher-email">Email *</label>
+                        <input type="email" id="global-teacher-email" placeholder="teacher@school.edu" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="global-grade">Grade Level *</label>
+                            <select id="global-grade" required>
+                                <option value="">Select grade...</option>
+                                <option value="K">Kindergarten</option>
+                                <option value="1st">1st Grade</option>
+                                <option value="2nd">2nd Grade</option>
+                                <option value="3rd">3rd Grade</option>
+                                <option value="4th">4th Grade</option>
+                                <option value="5th">5th Grade</option>
+                                <option value="6th">6th Grade</option>
+                                <option value="7th-8th">7th-8th Grade</option>
+                                <option value="9th-12th">High School</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="global-internet">Internet Quality *</label>
+                            <select id="global-internet" required>
+                                <option value="">Select...</option>
+                                <option value="high">High (reliable WiFi)</option>
+                                <option value="medium">Medium (sometimes slow)</option>
+                                <option value="low">Low (mobile data only)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="global-supplies">What art supplies does your school need most?</label>
+                        <textarea id="global-supplies" placeholder="Colored pencils, watercolors, thick paper, brushes..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="global-interests">What do you hope to share with your partner school?</label>
+                        <textarea id="global-interests" placeholder="We want to share our students' creativity and teach them about our culture..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Register School</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close">&times;</button>
+        <img id="lightbox-img" src="" alt="Artwork">
+    </div>
+
+    <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="handleImageSelect(event)">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+        const SUPABASE_URL = 'https://nappgvkeodboaazejile.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable__tl6WQjLJU45lgA8w145xQ_ypOUfBxc';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentSchool = null;
+        let currentPartnership = null;
+        let partnerSchool = null;
+        let messages = [];
+        let selectedImage = null;
+        let messageSubscription = null;
+
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page-${pageName}`).classList.add('active');
+            if (pageName === 'dashboard' && currentSchool) loadDashboard();
+            window.scrollTo(0, 0);
+        }
+
+        function openModal(modalName) { document.getElementById(`modal-${modalName}`).classList.add('active'); }
+        function closeModal(modalName) { document.getElementById(`modal-${modalName}`).classList.remove('active'); }
+
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
+        });
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const code = document.getElementById('login-code').value.toUpperCase().trim();
+            const alertDiv = document.getElementById('login-alert');
+            try {
+                const { data, error } = await supabase.from('schools').select('*').eq('access_code', code).single();
+                if (error || !data) { alertDiv.innerHTML = '<div class="alert alert-error">Invalid access code. Please try again.</div>'; return; }
+                currentSchool = data;
+                localStorage.setItem('school_id', data.id);
+                localStorage.setItem('access_code', code);
+                closeModal('login');
+                updateNavigation(true);
+                showPage('dashboard');
+            } catch (err) { alertDiv.innerHTML = '<div class="alert alert-error">Connection error. Please try again.</div>'; }
+        }
+
+        async function handleRegister(event, schoolType) {
+            event.preventDefault();
+            const alertDiv = document.getElementById(`register-${schoolType}-alert`);
+            let schoolData = {};
+            if (schoolType === 'us') {
+                schoolData = {
+                    school_name: document.getElementById('us-school-name').value,
+                    teacher_name: document.getElementById('us-teacher-name').value,
+                    teacher_email: document.getElementById('us-teacher-email').value,
+                    grade_level: document.getElementById('us-grade').value,
+                    country: document.getElementById('us-state').value + ', United States',
+                    school_type: 'us',
+                    interests: document.getElementById('us-interests').value,
+                    subjects: ['art']
+                };
+            } else {
+                schoolData = {
+                    school_name: document.getElementById('global-school-name').value,
+                    teacher_name: document.getElementById('global-teacher-name').value,
+                    teacher_email: document.getElementById('global-teacher-email').value,
+                    grade_level: document.getElementById('global-grade').value,
+                    country: document.getElementById('global-country').value,
+                    school_type: 'global',
+                    interests: document.getElementById('global-interests').value,
+                    supply_needs: document.getElementById('global-supplies').value,
+                    internet_quality: document.getElementById('global-internet').value,
+                    subjects: ['art']
+                };
+            }
+            try {
+                const { data, error } = await supabase.from('schools').insert([schoolData]).select().single();
+                if (error) {
+                    if (error.message.includes('duplicate')) { alertDiv.innerHTML = '<div class="alert alert-error">This email is already registered. Please login instead.</div>'; }
+                    else { alertDiv.innerHTML = `<div class="alert alert-error">Error: ${error.message}</div>`; }
+                    return;
+                }
+                currentSchool = data;
+                localStorage.setItem('school_id', data.id);
+                localStorage.setItem('access_code', data.access_code);
+                closeModal(`register-${schoolType}`);
+                updateNavigation(true);
+                showPage('dashboard');
+            } catch (err) { alertDiv.innerHTML = '<div class="alert alert-error">Connection error. Please try again.</div>'; }
+        }
+
+        function logout() {
+            currentSchool = null; currentPartnership = null; partnerSchool = null;
+            localStorage.removeItem('school_id'); localStorage.removeItem('access_code');
+            if (messageSubscription) messageSubscription.unsubscribe();
+            updateNavigation(false);
+            showPage('home');
+        }
+
+        function updateNavigation(isLoggedIn) {
+            document.getElementById('nav-login').style.display = isLoggedIn ? 'none' : 'block';
+            document.getElementById('nav-logout').style.display = isLoggedIn ? 'block' : 'none';
+            document.getElementById('nav-dashboard').style.display = isLoggedIn ? 'block' : 'none';
+        }
+
+        async function loadDashboard() {
+            const container = document.getElementById('dashboard-content');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            try {
+                const { data: schoolData } = await supabase.from('schools').select('*').eq('id', currentSchool.id).single();
+                currentSchool = schoolData;
+                if (currentSchool.partnership_id) { await loadPartnershipDashboard(); }
+                else { showWaitingState(); }
+            } catch (err) { container.innerHTML = '<div class="alert alert-error">Error loading dashboard. Please try again.</div>'; }
+        }
+
+        function showWaitingState() {
+            const container = document.getElementById('dashboard-content');
+            container.innerHTML = `
+                <div class="waiting-state">
+                    <div class="waiting-icon">🎨</div>
+                    <h2>Welcome, ${currentSchool.school_name}!</h2>
+                    <p>You're registered and we're finding you a partner school.</p>
+                    <p>We'll notify you at <strong>${currentSchool.teacher_email}</strong> when you're matched!</p>
+                    <div class="access-code-display">
+                        <p style="font-size: 0.85rem; color: rgba(10,22,40,0.6); margin-bottom: 0.5rem;">Your Access Code</p>
+                        <span>${currentSchool.access_code}</span>
+                    </div>
+                    <p style="font-size: 0.85rem;">Save this code to log back in anytime.</p>
+                    <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(30,150,252,0.1); border-radius: 12px; text-align: left;">
+                        <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">📋 Your Registration Details</h3>
+                        <p><strong>Grade Level:</strong> ${currentSchool.grade_level}</p>
+                        <p><strong>Location:</strong> ${currentSchool.country}</p>
+                        ${currentSchool.supply_needs ? `<p><strong>Supply Needs:</strong> ${currentSchool.supply_needs}</p>` : ''}
+                    </div>
+                </div>`;
+        }
+
+        async function loadPartnershipDashboard() {
+            const { data: partnership } = await supabase.from('partnerships').select('*').eq('id', currentSchool.partnership_id).single();
+            currentPartnership = partnership;
+            const { data: partner } = await supabase.from('schools').select('*').eq('id', currentSchool.partner_id).single();
+            partnerSchool = partner;
+            const { data: msgs } = await supabase.from('messages').select('*').eq('partnership_id', currentPartnership.id).order('created_at', { ascending: true });
+            messages = msgs || [];
+            renderDashboard();
+            subscribeToMessages();
+        }
+
+        function renderDashboard() {
+            const container = document.getElementById('dashboard-content');
+            const artworkMessages = messages.filter(m => m.image_url);
+            container.innerHTML = `
+                <div class="dashboard-header">
+                    <div class="partnership-info">
+                        <div class="partnership-avatar">🎨</div>
+                        <div class="partnership-details">
+                            <h2>${currentPartnership.name || `${currentSchool.school_name} ↔ ${partnerSchool.school_name}`}</h2>
+                            <p>${currentSchool.grade_level} Art Connection • Partner: ${partnerSchool.school_name}</p>
+                        </div>
+                    </div>
+                    <div class="access-code-display" style="margin: 0;">
+                        <p style="font-size: 0.75rem; color: rgba(10,22,40,0.6); margin-bottom: 0.25rem;">Your Code</p>
+                        <span style="font-size: 1rem;">${currentSchool.access_code}</span>
+                    </div>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="messages-panel">
+                        <div class="messages-header"><h3>💬 Messages with ${partnerSchool.school_name}</h3></div>
+                        <div class="messages-list" id="messages-list">
+                            ${messages.length === 0 ? '<div class="empty-state"><div class="empty-state-icon">👋</div><p>No messages yet! Be the first to say hello.</p></div>' : messages.map(msg => renderMessage(msg)).join('')}
+                        </div>
+                        <div class="message-input-area">
+                            <div class="message-input-wrapper">
+                                <div id="image-preview-container"></div>
+                                <textarea class="message-input" id="message-input" placeholder="Type a message..." onkeydown="handleMessageKeydown(event)"></textarea>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="icon-btn upload" onclick="document.getElementById('image-upload').click()" title="Upload artwork">📷</button>
+                                <button class="icon-btn send" onclick="sendMessage()" title="Send message">➤</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar">
+                        <div class="sidebar-card">
+                            <h3>🖼️ Artwork Gallery</h3>
+                            ${artworkMessages.length === 0 ? '<p style="color: rgba(10,22,40,0.5); font-size: 0.9rem;">Share artwork using the camera button!</p>' : `<div class="gallery-grid">${artworkMessages.slice(-6).map(msg => `<div class="gallery-item" onclick="openLightbox('${msg.image_url}')"><img src="${msg.image_url}" alt="Student artwork"></div>`).join('')}</div>`}
+                        </div>
+                        <div class="sidebar-card">
+                            <h3>🏫 Partner School Info</h3>
+                            <div class="partner-info-item"><span class="partner-info-label">School</span><span class="partner-info-value">${partnerSchool.school_name}</span></div>
+                            <div class="partner-info-item"><span class="partner-info-label">Location</span><span class="partner-info-value">${partnerSchool.country}</span></div>
+                            <div class="partner-info-item"><span class="partner-info-label">Grade</span><span class="partner-info-value">${partnerSchool.grade_level}</span></div>
+                            <div class="partner-info-item"><span class="partner-info-label">Teacher</span><span class="partner-info-value">${partnerSchool.teacher_name}</span></div>
+                            ${partnerSchool.supply_needs ? `<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(10,22,40,0.1);"><p class="partner-info-label" style="margin-bottom: 0.5rem;">Supply Needs</p><p style="font-size: 0.9rem;">${partnerSchool.supply_needs}</p></div>` : ''}
+                        </div>
+                    </div>
+                </div>`;
+            scrollMessagesToBottom();
+        }
+
+        function renderMessage(msg) {
+            const isSent = msg.sender_school_id === currentSchool.id;
+            const time = new Date(msg.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            return `<div class="message ${isSent ? 'sent' : 'received'}">
+                ${msg.image_url ? `<img src="${msg.image_url}" alt="Shared artwork" class="message-image" onclick="openLightbox('${msg.image_url}')">` : ''}
+                ${msg.content ? `<p>${escapeHtml(msg.content)}</p>` : ''}
+                <div class="message-meta">${msg.student_first_name ? `${msg.student_first_name} • ` : ''}${time}</div>
+            </div>`;
+        }
+
+        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        function scrollMessagesToBottom() { const list = document.getElementById('messages-list'); if (list) list.scrollTop = list.scrollHeight; }
+
+        function handleMessageKeydown(event) { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); } }
+
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const content = input.value.trim();
+            if (!content && !selectedImage) return;
+            let imageUrl = null;
+            if (selectedImage) { imageUrl = await uploadImage(selectedImage); if (!imageUrl) { alert('Failed to upload image. Please try again.'); return; } }
+            const messageData = { partnership_id: currentPartnership.id, sender_school_id: currentSchool.id, message_type: imageUrl ? 'artwork' : 'text', content: content || null, image_url: imageUrl };
+            const { data, error } = await supabase.from('messages').insert([messageData]).select().single();
+            if (error) { alert('Failed to send message. Please try again.'); return; }
+            input.value = '';
+            clearImagePreview();
+            messages.push(data);
+            const list = document.getElementById('messages-list');
+            const emptyState = list.querySelector('.empty-state');
+            if (emptyState) emptyState.remove();
+            list.insertAdjacentHTML('beforeend', renderMessage(data));
+            scrollMessagesToBottom();
+        }
+
+        async function uploadImage(file) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${currentPartnership.id}/${Date.now()}.${fileExt}`;
+            const { data, error } = await supabase.storage.from('artwork').upload(fileName, file);
+            if (error) { console.error('Upload error:', error); return null; }
+            const { data: { publicUrl } } = supabase.storage.from('artwork').getPublicUrl(fileName);
+            return publicUrl;
+        }
+
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) { alert('Image must be smaller than 5MB'); return; }
+            selectedImage = file;
+            showImagePreview(file);
+        }
+
+        function showImagePreview(file) {
+            const container = document.getElementById('image-preview-container');
+            const reader = new FileReader();
+            reader.onload = (e) => { container.innerHTML = `<div class="image-preview"><img src="${e.target.result}" alt="Preview"><button class="remove-image" onclick="clearImagePreview()">×</button></div>`; };
+            reader.readAsDataURL(file);
+        }
+
+        function clearImagePreview() { selectedImage = null; document.getElementById('image-preview-container').innerHTML = ''; document.getElementById('image-upload').value = ''; }
+
+        function subscribeToMessages() {
+            if (messageSubscription) messageSubscription.unsubscribe();
+            messageSubscription = supabase.channel('messages').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `partnership_id=eq.${currentPartnership.id}` }, (payload) => {
+                const newMessage = payload.new;
+                if (!messages.find(m => m.id === newMessage.id)) {
+                    messages.push(newMessage);
+                    const list = document.getElementById('messages-list');
+                    if (list) { const emptyState = list.querySelector('.empty-state'); if (emptyState) emptyState.remove(); list.insertAdjacentHTML('beforeend', renderMessage(newMessage)); scrollMessagesToBottom(); }
+                }
+            }).subscribe();
+        }
+
+        function openLightbox(imageUrl) { document.getElementById('lightbox-img').src = imageUrl; document.getElementById('lightbox').classList.add('active'); }
+        function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
+
+        async function init() {
+            const savedSchoolId = localStorage.getItem('school_id');
+            const savedCode = localStorage.getItem('access_code');
+            if (savedSchoolId && savedCode) {
+                try {
+                    const { data } = await supabase.from('schools').select('*').eq('id', savedSchoolId).eq('access_code', savedCode).single();
+                    if (data) { currentSchool = data; updateNavigation(true); }
+                    else { localStorage.removeItem('school_id'); localStorage.removeItem('access_code'); }
+                } catch (err) { console.error('Session restore failed:', err); }
+            }
+        }
+// ============================================
+        // TRANSLATION FUNCTIONALITY
+        // ============================================
+        
+        const translations = {
+            en: {
+                // Nav
+                home: "Home",
+                howItWorks: "How It Works",
+                dashboard: "Dashboard",
+                schoolLogin: "School Login",
+                logout: "Logout",
+                
+                // Hero
+                heroTitle1: "Connecting",
+                heroTitle2: "Classrooms",
+                heroTitle3: "Through the",
+                heroTitle4: "Power of Art",
+                heroSubtitle: "We match US schools with partner classrooms around the world, turning art supply donations into lasting creative connections.",
+                usSignUp: "🇺🇸 US School Sign Up",
+                globalSignUp: "🌍 Global School Sign Up",
+                
+                // How it works
+                howItWorksTitle: "How It Works",
+                howItWorksSubtitle: "A simple four-step process to connect classrooms across the globe",
+                step1Title: "Sign Up",
+                step1Desc: "US and Global South schools complete a quick registration form sharing grade levels, interests, and needs.",
+                step2Title: "Get Matched",
+                step2Desc: "We pair your classroom with a partner school based on grade level and artistic interests.",
+                step3Title: "Connect & Create",
+                step3Desc: "Message your partner classroom, share photos of artwork, and build real connections.",
+                step4Title: "Share Impact",
+                step4Desc: "See the direct impact of donations as partner students share what they create with your supplies.",
+                
+                // For Schools
+                forSchoolsTitle: "For Schools",
+                forSchoolsSubtitle: "Whether you're donating or receiving, every classroom gains something valuable",
+                usSchools: "🇺🇸 US Schools",
+                usSchoolsDesc: "Transform your donation into a meaningful classroom experience.",
+                usFeature1: "See exactly where your supplies go",
+                usFeature2: "Build global awareness in your students",
+                usFeature3: "Exchange artwork and messages directly",
+                usFeature4: "Integrate into existing curriculum",
+                usFeature5: "Perfect for service learning credits",
+                registerSchool: "Register Your School",
+                globalSchools: "🌍 Global Partner Schools",
+                globalSchoolsDesc: "Receive supplies and connect with classrooms who celebrate your creativity.",
+                globalFeature1: "Request specific art supplies you need",
+                globalFeature2: "Share your students' amazing artwork",
+                globalFeature3: "Build English language skills naturally",
+                globalFeature4: "Expose students to different cultures",
+                globalFeature5: "Mobile-friendly, works offline",
+                joinPartner: "Join as Partner School",
+                
+                // Footer
+                footerDesc: "Connecting classrooms through creativity. Every child deserves art supplies and the chance to share their vision with the world.",
+                footerCopyright: "Color Compass │ Made with ❤️ for creative classrooms everywhere.",
+                
+                // Login Modal
+                loginTitle: "School Login",
+                accessCode: "Access Code",
+                accessCodePlaceholder: "Enter your 8-character code",
+                accessCodeHint: "You received this code when you registered your school.",
+                loginBtn: "Login",
+                noAccount: "Don't have an account?",
+                registerLink: "Register your school",
+                
+                // Registration
+                usRegTitle: "🇺🇸 US School Registration",
+                globalRegTitle: "🌍 Global School Registration",
+                schoolName: "School Name *",
+                teacherName: "Teacher Name *",
+                email: "Email *",
+                gradeLevel: "Grade Level *",
+                selectGrade: "Select grade...",
+                state: "State *",
+                country: "Country *",
+                internetQuality: "Internet Quality *",
+                selectInternet: "Select...",
+                internetHigh: "High (reliable WiFi)",
+                internetMedium: "Medium (sometimes slow)",
+                internetLow: "Low (mobile data only)",
+                interestsUs: "What do you hope to gain from this partnership?",
+                interestsUsPlaceholder: "We want our students to learn about different cultures and see the impact of their donations...",
+                supplyNeeds: "What art supplies does your school need most?",
+                supplyNeedsPlaceholder: "Colored pencils, watercolors, thick paper, brushes...",
+                interestsGlobal: "What do you hope to share with your partner school?",
+                interestsGlobalPlaceholder: "We want to share our students' creativity and teach them about our culture...",
+                
+                // Dashboard
+                yourCode: "Your Code",
+                messagesEmpty: "No messages yet! Be the first to say hello.",
+                typeMessage: "Type a message...",
+                artworkGallery: "🖼️ Artwork Gallery",
+                artworkHint: "Share artwork using the camera button!",
+                partnerInfo: "🏫 Partner School Info",
+                school: "School",
+                location: "Location",
+                grade: "Grade",
+                teacher: "Teacher",
+                supplyNeedsLabel: "Supply Needs",
+                
+                // Waiting state
+                welcomeText: "Welcome,",
+                waitingDesc: "You're registered and we're finding you a partner school.",
+                notifyText: "We'll notify you at",
+                whenMatched: "when you're matched!",
+                yourAccessCode: "Your Access Code",
+                saveCodeHint: "Save this code to log back in anytime.",
+                regDetails: "📋 Your Registration Details"
+            },
+            es: {
+                home: "Inicio",
+                howItWorks: "Cómo Funciona",
+                dashboard: "Panel",
+                schoolLogin: "Acceso Escolar",
+                logout: "Cerrar Sesión",
+                heroTitle1: "Conectando",
+                heroTitle2: "Aulas",
+                heroTitle3: "A través del",
+                heroTitle4: "Poder del Arte",
+                heroSubtitle: "Conectamos escuelas de EE.UU. con aulas asociadas en todo el mundo, convirtiendo donaciones de materiales artísticos en conexiones creativas duraderas.",
+                usSignUp: "🇺🇸 Registro Escuela EE.UU.",
+                globalSignUp: "🌍 Registro Escuela Global",
+                howItWorksTitle: "Cómo Funciona",
+                howItWorksSubtitle: "Un proceso simple de cuatro pasos para conectar aulas en todo el mundo",
+                step1Title: "Regístrate",
+                step1Desc: "Las escuelas de EE.UU. y del Sur Global completan un formulario rápido compartiendo niveles de grado, intereses y necesidades.",
+                step2Title: "Emparejamiento",
+                step2Desc: "Emparejamos tu aula con una escuela asociada según el nivel de grado e intereses artísticos.",
+                step3Title: "Conecta y Crea",
+                step3Desc: "Envía mensajes a tu aula asociada, comparte fotos de obras de arte y construye conexiones reales.",
+                step4Title: "Comparte el Impacto",
+                step4Desc: "Observa el impacto directo de las donaciones cuando los estudiantes asociados comparten lo que crean con tus materiales.",
+                forSchoolsTitle: "Para Escuelas",
+                forSchoolsSubtitle: "Ya sea que dones o recibas, cada aula gana algo valioso",
+                usSchools: "🇺🇸 Escuelas de EE.UU.",
+                usSchoolsDesc: "Transforma tu donación en una experiencia significativa para el aula.",
+                usFeature1: "Mira exactamente a dónde van tus materiales",
+                usFeature2: "Desarrolla conciencia global en tus estudiantes",
+                usFeature3: "Intercambia obras de arte y mensajes directamente",
+                usFeature4: "Integra en el currículo existente",
+                usFeature5: "Perfecto para créditos de aprendizaje-servicio",
+                registerSchool: "Registra Tu Escuela",
+                globalSchools: "🌍 Escuelas Asociadas Globales",
+                globalSchoolsDesc: "Recibe materiales y conéctate con aulas que celebran tu creatividad.",
+                globalFeature1: "Solicita materiales artísticos específicos que necesitas",
+                globalFeature2: "Comparte las increíbles obras de arte de tus estudiantes",
+                globalFeature3: "Desarrolla habilidades en inglés naturalmente",
+                globalFeature4: "Expón a los estudiantes a diferentes culturas",
+                globalFeature5: "Compatible con móviles, funciona sin conexión",
+                joinPartner: "Únete como Escuela Asociada",
+                footerDesc: "Conectando aulas a través de la creatividad. Cada niño merece materiales artísticos y la oportunidad de compartir su visión con el mundo.",
+                footerCopyright: "Color Compass │ Hecho con ❤️ para aulas creativas en todas partes.",
+                loginTitle: "Acceso Escolar",
+                accessCode: "Código de Acceso",
+                accessCodePlaceholder: "Ingresa tu código de 8 caracteres",
+                accessCodeHint: "Recibiste este código cuando registraste tu escuela.",
+                loginBtn: "Ingresar",
+                noAccount: "¿No tienes cuenta?",
+                registerLink: "Registra tu escuela",
+                usRegTitle: "🇺🇸 Registro Escuela EE.UU.",
+                globalRegTitle: "🌍 Registro Escuela Global",
+                schoolName: "Nombre de la Escuela *",
+                teacherName: "Nombre del Maestro *",
+                email: "Correo *",
+                gradeLevel: "Nivel de Grado *",
+                selectGrade: "Seleccionar grado...",
+                state: "Estado *",
+                country: "País *",
+                internetQuality: "Calidad de Internet *",
+                selectInternet: "Seleccionar...",
+                internetHigh: "Alta (WiFi confiable)",
+                internetMedium: "Media (a veces lento)",
+                internetLow: "Baja (solo datos móviles)",
+                interestsUs: "¿Qué esperas obtener de esta asociación?",
+                interestsUsPlaceholder: "Queremos que nuestros estudiantes aprendan sobre diferentes culturas y vean el impacto de sus donaciones...",
+                supplyNeeds: "¿Qué materiales artísticos necesita más tu escuela?",
+                supplyNeedsPlaceholder: "Lápices de colores, acuarelas, papel grueso, pinceles...",
+                interestsGlobal: "¿Qué esperas compartir con tu escuela asociada?",
+                interestsGlobalPlaceholder: "Queremos compartir la creatividad de nuestros estudiantes y enseñarles sobre nuestra cultura...",
+                yourCode: "Tu Código",
+                messagesEmpty: "¡Aún no hay mensajes! Sé el primero en saludar.",
+                typeMessage: "Escribe un mensaje...",
+                artworkGallery: "🖼️ Galería de Arte",
+                artworkHint: "¡Comparte arte usando el botón de cámara!",
+                partnerInfo: "🏫 Info de Escuela Asociada",
+                school: "Escuela",
+                location: "Ubicación",
+                grade: "Grado",
+                teacher: "Maestro",
+                supplyNeedsLabel: "Necesidades de Materiales",
+                welcomeText: "Bienvenido,",
+                waitingDesc: "Estás registrado y estamos buscándote una escuela asociada.",
+                notifyText: "Te notificaremos en",
+                whenMatched: "cuando seas emparejado!",
+                yourAccessCode: "Tu Código de Acceso",
+                saveCodeHint: "Guarda este código para volver a iniciar sesión en cualquier momento.",
+                regDetails: "📋 Detalles de Tu Registro"
+            },
+            pt: {
+                home: "Início",
+                howItWorks: "Como Funciona",
+                dashboard: "Painel",
+                schoolLogin: "Login da Escola",
+                logout: "Sair",
+                heroTitle1: "Conectando",
+                heroTitle2: "Salas de Aula",
+                heroTitle3: "Através do",
+                heroTitle4: "Poder da Arte",
+                heroSubtitle: "Conectamos escolas dos EUA com salas de aula parceiras ao redor do mundo, transformando doações de materiais artísticos em conexões criativas duradouras.",
+                usSignUp: "🇺🇸 Cadastro Escola EUA",
+                globalSignUp: "🌍 Cadastro Escola Global",
+                howItWorksTitle: "Como Funciona",
+                howItWorksSubtitle: "Um processo simples de quatro etapas para conectar salas de aula ao redor do mundo",
+                step1Title: "Cadastre-se",
+                step1Desc: "Escolas dos EUA e do Sul Global preenchem um formulário rápido compartilhando níveis de série, interesses e necessidades.",
+                step2Title: "Seja Pareado",
+                step2Desc: "Pareamos sua sala de aula com uma escola parceira com base no nível de série e interesses artísticos.",
+                step3Title: "Conecte e Crie",
+                step3Desc: "Envie mensagens para sua sala de aula parceira, compartilhe fotos de obras de arte e construa conexões reais.",
+                step4Title: "Compartilhe o Impacto",
+                step4Desc: "Veja o impacto direto das doações quando os alunos parceiros compartilham o que criam com seus materiais.",
+                forSchoolsTitle: "Para Escolas",
+                forSchoolsSubtitle: "Seja doando ou recebendo, cada sala de aula ganha algo valioso",
+                usSchools: "🇺🇸 Escolas dos EUA",
+                usSchoolsDesc: "Transforme sua doação em uma experiência significativa para a sala de aula.",
+                usFeature1: "Veja exatamente para onde vão seus materiais",
+                usFeature2: "Desenvolva consciência global em seus alunos",
+                usFeature3: "Troque obras de arte e mensagens diretamente",
+                usFeature4: "Integre ao currículo existente",
+                usFeature5: "Perfeito para créditos de aprendizado-serviço",
+                registerSchool: "Cadastre Sua Escola",
+                globalSchools: "🌍 Escolas Parceiras Globais",
+                globalSchoolsDesc: "Receba materiais e conecte-se com salas de aula que celebram sua criatividade.",
+                globalFeature1: "Solicite materiais artísticos específicos que você precisa",
+                globalFeature2: "Compartilhe as incríveis obras de arte de seus alunos",
+                globalFeature3: "Desenvolva habilidades em inglês naturalmente",
+                globalFeature4: "Exponha os alunos a diferentes culturas",
+                globalFeature5: "Compatível com celular, funciona offline",
+                joinPartner: "Junte-se como Escola Parceira",
+                footerDesc: "Conectando salas de aula através da criatividade. Toda criança merece materiais artísticos e a chance de compartilhar sua visão com o mundo.",
+                footerCopyright: "Color Compass │ Feito com ❤️ para salas de aula criativas em todos os lugares.",
+                loginTitle: "Login da Escola",
+                accessCode: "Código de Acesso",
+                accessCodePlaceholder: "Digite seu código de 8 caracteres",
+                accessCodeHint: "Você recebeu este código quando cadastrou sua escola.",
+                loginBtn: "Entrar",
+                noAccount: "Não tem conta?",
+                registerLink: "Cadastre sua escola",
+                usRegTitle: "🇺🇸 Cadastro Escola EUA",
+                globalRegTitle: "🌍 Cadastro Escola Global",
+                schoolName: "Nome da Escola *",
+                teacherName: "Nome do Professor *",
+                email: "Email *",
+                gradeLevel: "Nível de Série *",
+                selectGrade: "Selecionar série...",
+                state: "Estado *",
+                country: "País *",
+                internetQuality: "Qualidade da Internet *",
+                selectInternet: "Selecionar...",
+                internetHigh: "Alta (WiFi confiável)",
+                internetMedium: "Média (às vezes lento)",
+                internetLow: "Baixa (apenas dados móveis)",
+                interestsUs: "O que você espera ganhar com esta parceria?",
+                interestsUsPlaceholder: "Queremos que nossos alunos aprendam sobre diferentes culturas e vejam o impacto de suas doações...",
+                supplyNeeds: "Quais materiais artísticos sua escola mais precisa?",
+                supplyNeedsPlaceholder: "Lápis de cor, aquarelas, papel grosso, pincéis...",
+                interestsGlobal: "O que você espera compartilhar com sua escola parceira?",
+                interestsGlobalPlaceholder: "Queremos compartilhar a criatividade de nossos alunos e ensiná-los sobre nossa cultura...",
+                yourCode: "Seu Código",
+                messagesEmpty: "Ainda não há mensagens! Seja o primeiro a dizer olá.",
+                typeMessage: "Digite uma mensagem...",
+                artworkGallery: "🖼️ Galeria de Arte",
+                artworkHint: "Compartilhe arte usando o botão da câmera!",
+                partnerInfo: "🏫 Info da Escola Parceira",
+                school: "Escola",
+                location: "Localização",
+                grade: "Série",
+                teacher: "Professor",
+                supplyNeedsLabel: "Necessidades de Materiais",
+                welcomeText: "Bem-vindo,",
+                waitingDesc: "Você está cadastrado e estamos encontrando uma escola parceira para você.",
+                notifyText: "Notificaremos você em",
+                whenMatched: "quando você for pareado!",
+                yourAccessCode: "Seu Código de Acesso",
+                saveCodeHint: "Salve este código para fazer login novamente a qualquer momento.",
+                regDetails: "📋 Detalhes do Seu Cadastro"
+            },
+            fr: {
+                home: "Accueil",
+                howItWorks: "Comment ça marche",
+                dashboard: "Tableau de bord",
+                schoolLogin: "Connexion École",
+                logout: "Déconnexion",
+                heroTitle1: "Connecter",
+                heroTitle2: "les Classes",
+                heroTitle3: "Par le",
+                heroTitle4: "Pouvoir de l'Art",
+                heroSubtitle: "Nous associons des écoles américaines à des classes partenaires du monde entier, transformant les dons de fournitures artistiques en connexions créatives durables.",
+                usSignUp: "🇺🇸 Inscription École US",
+                globalSignUp: "🌍 Inscription École Mondiale",
+                howItWorksTitle: "Comment ça marche",
+                howItWorksSubtitle: "Un processus simple en quatre étapes pour connecter les classes à travers le monde",
+                step1Title: "Inscrivez-vous",
+                step1Desc: "Les écoles américaines et du Sud complètent un formulaire rapide partageant niveaux, intérêts et besoins.",
+                step2Title: "Soyez Jumelé",
+                step2Desc: "Nous associons votre classe à une école partenaire selon le niveau et les intérêts artistiques.",
+                step3Title: "Connectez et Créez",
+                step3Desc: "Envoyez des messages à votre classe partenaire, partagez des photos d'œuvres et construisez de vraies connexions.",
+                step4Title: "Partagez l'Impact",
+                step4Desc: "Voyez l'impact direct des dons lorsque les élèves partenaires partagent ce qu'ils créent avec vos fournitures.",
+                forSchoolsTitle: "Pour les Écoles",
+                forSchoolsSubtitle: "Que vous donniez ou receviez, chaque classe gagne quelque chose de précieux",
+                usSchools: "🇺🇸 Écoles Américaines",
+                usSchoolsDesc: "Transformez votre don en une expérience significative pour la classe.",
+                registerSchool: "Inscrivez Votre École",
+                globalSchools: "🌍 Écoles Partenaires Mondiales",
+                globalSchoolsDesc: "Recevez des fournitures et connectez-vous avec des classes qui célèbrent votre créativité.",
+                joinPartner: "Rejoindre comme École Partenaire",
+                loginTitle: "Connexion École",
+                accessCode: "Code d'Accès",
+                loginBtn: "Connexion",
+                schoolName: "Nom de l'École *",
+                teacherName: "Nom de l'Enseignant *",
+                email: "Email *",
+                gradeLevel: "Niveau *",
+                country: "Pays *",
+                typeMessage: "Tapez un message...",
+                artworkGallery: "🖼️ Galerie d'Art",
+                partnerInfo: "🏫 Info École Partenaire"
+            },
+            sw: {
+                home: "Nyumbani",
+                howItWorks: "Inavyofanya Kazi",
+                dashboard: "Dashibodi",
+                schoolLogin: "Ingia Shule",
+                logout: "Ondoka",
+                heroTitle1: "Kuunganisha",
+                heroTitle2: "Madarasa",
+                heroTitle3: "Kupitia",
+                heroTitle4: "Nguvu ya Sanaa",
+                heroSubtitle: "Tunaoanisha shule za Marekani na madarasa shirika duniani kote, kubadilisha michango ya vifaa vya sanaa kuwa uhusiano wa ubunifu wa kudumu.",
+                usSignUp: "🇺🇸 Jiandikishe Shule ya US",
+                globalSignUp: "🌍 Jiandikishe Shule ya Kimataifa",
+                howItWorksTitle: "Inavyofanya Kazi",
+                step1Title: "Jiandikishe",
+                step2Title: "Oanishwa",
+                step3Title: "Unganisha na Unda",
+                step4Title: "Shiriki Athari",
+                forSchoolsTitle: "Kwa Shule",
+                usSchools: "🇺🇸 Shule za Marekani",
+                globalSchools: "🌍 Shule Shirika za Kimataifa",
+                registerSchool: "Sajili Shule Yako",
+                joinPartner: "Jiunge kama Shule Shirika",
+                loginTitle: "Ingia Shule",
+                accessCode: "Msimbo wa Kufikia",
+                loginBtn: "Ingia",
+                schoolName: "Jina la Shule *",
+                teacherName: "Jina la Mwalimu *",
+                email: "Barua pepe *",
+                country: "Nchi *",
+                typeMessage: "Andika ujumbe..."
+            }
+        };
+
+        let currentLanguage = 'en';
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('preferred_language', lang);
+            applyTranslations();
+        }
+
+        function t(key) {
+            return translations[currentLanguage]?.[key] || translations['en']?.[key] || key;
+        }
+
+        function applyTranslations() {
+            // Navigation
+            document.querySelector('.nav-links li:nth-child(1) a').textContent = t('home');
+            document.querySelector('.nav-links li:nth-child(2) a').textContent = t('howItWorks');
+            
+            const dashboardLink = document.querySelector('#nav-dashboard a');
+            if (dashboardLink) dashboardLink.textContent = t('dashboard');
+            
+            const loginBtn = document.querySelector('#nav-login .nav-btn');
+            if (loginBtn) loginBtn.textContent = t('schoolLogin');
+            
+            const logoutBtn = document.querySelector('#nav-logout button');
+            if (logoutBtn) logoutBtn.textContent = t('logout');
+
+            // Hero Section
+            const heroH1 = document.querySelector('.hero h1');
+            if (heroH1) {
+                heroH1.innerHTML = `${t('heroTitle1')} <span class="highlight-yellow">${t('heroTitle2')}</span> ${t('heroTitle3')} <span class="highlight-blue">${t('heroTitle4')}</span>`;
+            }
+            
+            const heroP = document.querySelector('.hero p');
+            if (heroP) heroP.textContent = t('heroSubtitle');
+
+            const ctaButtons = document.querySelectorAll('.cta-group .btn');
+            if (ctaButtons[0]) ctaButtons[0].textContent = t('usSignUp');
+            if (ctaButtons[1]) ctaButtons[1].textContent = t('globalSignUp');
+
+            // How It Works Section
+            const howTitle = document.querySelector('#how-it-works .section-title h2');
+            if (howTitle) howTitle.textContent = t('howItWorksTitle');
+            
+            const howSubtitle = document.querySelector('#how-it-works .section-title p');
+            if (howSubtitle) howSubtitle.textContent = t('howItWorksSubtitle');
+
+            const steps = document.querySelectorAll('.step');
+            if (steps[0]) {
+                steps[0].querySelector('h3').textContent = t('step1Title');
+                steps[0].querySelector('p').textContent = t('step1Desc');
+            }
+            if (steps[1]) {
+                steps[1].querySelector('h3').textContent = t('step2Title');
+                steps[1].querySelector('p').textContent = t('step2Desc');
+            }
+            if (steps[2]) {
+                steps[2].querySelector('h3').textContent = t('step3Title');
+                steps[2].querySelector('p').textContent = t('step3Desc');
+            }
+            if (steps[3]) {
+                steps[3].querySelector('h3').textContent = t('step4Title');
+                steps[3].querySelector('p').textContent = t('step4Desc');
+            }
+
+            // For Schools Section
+            const forSchoolsTitle = document.querySelector('#for-schools .section-title h2');
+            if (forSchoolsTitle) forSchoolsTitle.textContent = t('forSchoolsTitle');
+            
+            const forSchoolsSubtitle = document.querySelector('#for-schools .section-title p');
+            if (forSchoolsSubtitle) forSchoolsSubtitle.textContent = t('forSchoolsSubtitle');
+
+            const schoolCards = document.querySelectorAll('.school-card');
+            if (schoolCards[0]) {
+                schoolCards[0].querySelector('h3').textContent = t('usSchools');
+                schoolCards[0].querySelector('p').textContent = t('usSchoolsDesc');
+                schoolCards[0].querySelector('.btn').textContent = t('registerSchool');
+            }
+            if (schoolCards[1]) {
+                schoolCards[1].querySelector('h3').textContent = t('globalSchools');
+                schoolCards[1].querySelector('p').textContent = t('globalSchoolsDesc');
+                schoolCards[1].querySelector('.btn').textContent = t('joinPartner');
+            }
+
+            // Login Modal
+            const loginTitle = document.querySelector('#modal-login .modal-header h2');
+            if (loginTitle) loginTitle.textContent = t('loginTitle');
+            
+            const accessCodeLabel = document.querySelector('#modal-login label[for="login-code"]');
+            if (accessCodeLabel) accessCodeLabel.textContent = t('accessCode');
+            
+            const loginSubmit = document.querySelector('#modal-login .btn-primary');
+            if (loginSubmit) loginSubmit.textContent = t('loginBtn');
+
+            // Registration Modals
+            const usRegTitle = document.querySelector('#modal-register-us .modal-header h2');
+            if (usRegTitle) usRegTitle.textContent = t('usRegTitle');
+            
+            const globalRegTitle = document.querySelector('#modal-register-global .modal-header h2');
+            if (globalRegTitle) globalRegTitle.textContent = t('globalRegTitle');
+
+            // Message input placeholder
+            const messageInput = document.querySelector('.message-input');
+            if (messageInput) messageInput.placeholder = t('typeMessage');
+
+            // Footer
+            const footerDesc = document.querySelector('.footer-brand p');
+            if (footerDesc) footerDesc.textContent = t('footerDesc');
+            
+            const footerCopyright = document.querySelector('.footer-bottom p');
+            if (footerCopyright) footerCopyright.textContent = t('footerCopyright');
+        }
+
+        // Load saved language on page load
+        function loadSavedLanguage() {
+            const savedLang = localStorage.getItem('preferred_language');
+            if (savedLang) {
+                currentLanguage = savedLang;
+                document.getElementById('language-select').value = savedLang;
+                applyTranslations();
+            }
+        }
+
+        window.addEventListener('load', loadSavedLanguage);
+
+
+
+	init();
+    </script>
+<!-- Google Translate Script -->
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>
+
+
+
+
