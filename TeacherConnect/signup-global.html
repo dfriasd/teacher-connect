@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global School Sign Up | Color Compass</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sun-yellow: #F7B32B;
+            --earth-terracotta: #D64933;
+            --sky-blue: #1E96FC;
+            --leaf-green: #2D936C;
+            --warm-cream: #FFF8F0;
+            --deep-navy: #0A1628;
+            --soft-shadow: rgba(10, 22, 40, 0.08);
+            --danger: #dc3545;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Source Sans 3', -apple-system, sans-serif;
+            background: var(--warm-cream);
+            color: var(--deep-navy);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(247, 179, 43, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(30, 150, 252, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 90%, rgba(214, 73, 51, 0.06) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 600; }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 248, 240, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(10, 22, 40, 0.05);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--deep-navy);
+        }
+
+        .logo-icon {
+            width: 40px; height: 40px;
+            background: conic-gradient(var(--sun-yellow) 0deg 90deg, var(--earth-terracotta) 90deg 180deg, var(--sky-blue) 180deg 270deg, var(--leaf-green) 270deg 360deg);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px; height: 12px;
+            background: var(--warm-cream);
+            border-radius: 50%;
+        }
+
+        .logo-text { font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 700; }
+
+        .nav-links { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--deep-navy);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--earth-terracotta); }
+
+        /* Main Content */
+        .signup-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7rem 2rem 4rem;
+        }
+
+        .signup-container {
+            background: white;
+            border-radius: 24px;
+            max-width: 550px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(10, 22, 40, 0.15);
+            overflow: hidden;
+        }
+
+        .signup-header {
+            padding: 2rem 2rem 1.5rem;
+            border-bottom: 1px solid rgba(10, 22, 40, 0.1);
+            background: linear-gradient(135deg, rgba(247, 179, 43, 0.08), rgba(214, 73, 51, 0.05));
+        }
+
+        .signup-header h1 {
+            font-size: 1.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .signup-header p {
+            color: rgba(10, 22, 40, 0.6);
+            margin-top: 0.5rem;
+        }
+
+        .signup-body {
+            padding: 2rem;
+        }
+
+        /* Forms */
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--deep-navy); }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid rgba(10, 22, 40, 0.1);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus { 
+            outline: none; 
+            border-color: var(--sky-blue); 
+            box-shadow: 0 0 0 3px rgba(30, 150, 252, 0.1);
+        }
+
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-hint { font-size: 0.85rem; color: rgba(10, 22, 40, 0.5); margin-top: 0.25rem; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.75rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--earth-terracotta);
+            color: white;
+            box-shadow: 0 4px 20px rgba(214, 73, 51, 0.3);
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(214, 73, 51, 0.4); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .btn-secondary {
+            background: white;
+            color: var(--deep-navy);
+            border: 2px solid rgba(10, 22, 40, 0.1);
+        }
+
+        .btn-secondary:hover { border-color: var(--sky-blue); color: var(--sky-blue); }
+
+        /* Alerts */
+        .alert { padding: 1rem 1.25rem; border-radius: 12px; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; }
+        .alert-error { background: rgba(220, 53, 69, 0.1); color: var(--danger); border: 1px solid rgba(220, 53, 69, 0.2); }
+        .alert-success { background: rgba(45, 147, 108, 0.1); color: var(--leaf-green); border: 1px solid rgba(45, 147, 108, 0.2); }
+
+        /* Success State */
+        .success-state {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .success-state .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .access-code-display {
+            background: rgba(10, 22, 40, 0.05);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            display: inline-block;
+        }
+
+        .access-code-display span {
+            font-family: monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: var(--sky-blue);
+        }
+
+        /* Alternative signup link */
+        .alt-signup {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(10, 22, 40, 0.1);
+        }
+
+        .alt-signup a {
+            color: var(--sky-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .alt-signup a:hover {
+            text-decoration: underline;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(10, 22, 40, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: toastIn 0.3s ease-out;
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .toast.success { border-left: 4px solid var(--leaf-green); }
+        .toast.error { border-left: 4px solid var(--danger); }
+
+        /* Loading spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 99;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(10, 22, 40, 0.15);
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .language-selector select {
+            padding: 0.5rem 1rem;
+            border: 2px solid rgba(10, 22, 40, 0.1);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: white;
+            cursor: pointer;
+            min-width: 140px;
+        }
+
+        .language-selector select:focus {
+            outline: none;
+            border-color: var(--sky-blue);
+        }
+
+        .language-selector::before {
+            content: '🌐';
+            font-size: 1.25rem;
+            padding-left: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav { padding: 1rem; }
+            .signup-page { padding: 5rem 1rem 2rem; }
+            .signup-header, .signup-body { padding: 1.5rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .language-selector {
+                top: auto;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <select id="language-select">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="pt">Português</option>
+            <option value="fr">Français</option>
+            <option value="sw">Kiswahili</option>
+        </select>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="teacher-connect.html" class="logo">
+            <div class="logo-icon"></div>
+            <span class="logo-text">Color Compass</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="teacher-connect.html" data-i18n="home">Home</a></li>
+            <li><a href="signup-us.html" data-i18n="usSignUp">US School Sign Up</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="signup-page">
+        <div class="signup-container">
+            <div class="signup-header">
+                <h1 data-i18n="globalRegTitle">🌍 Global School Registration</h1>
+                <p data-i18n="globalRegSubtitle">Join Color Compass to receive art supplies and connect with a US partner classroom.</p>
+            </div>
+            
+            <div class="signup-body">
+                <!-- Registration Form -->
+                <div id="form-container">
+                    <div id="register-alert"></div>
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label for="school-name" data-i18n="schoolName">School Name *</label>
+                            <input type="text" id="school-name" placeholder="Escola Esperança" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="teacher-name" data-i18n="teacherName">Teacher Name *</label>
+                                <input type="text" id="teacher-name" placeholder="Sr. Santos" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="country" data-i18n="country">Country *</label>
+                                <input type="text" id="country" placeholder="Brazil" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="teacher-email" data-i18n="email">Email *</label>
+                            <input type="email" id="teacher-email" placeholder="teacher@school.edu" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="grade" data-i18n="gradeLevel">Grade Level *</label>
+                                <select id="grade" required>
+                                    <option value="" data-i18n="selectGrade">Select grade...</option>
+                                    <option value="K" data-i18n="kindergarten">Kindergarten</option>
+                                    <option value="1st" data-i18n="grade1">1st Grade</option>
+                                    <option value="2nd" data-i18n="grade2">2nd Grade</option>
+                                    <option value="3rd" data-i18n="grade3">3rd Grade</option>
+                                    <option value="4th" data-i18n="grade4">4th Grade</option>
+                                    <option value="5th" data-i18n="grade5">5th Grade</option>
+                                    <option value="6th" data-i18n="grade6">6th Grade</option>
+                                    <option value="7th-8th" data-i18n="grade78">7th-8th Grade</option>
+                                    <option value="9th-12th" data-i18n="highSchool">High School</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="internet" data-i18n="internetQuality">Internet Quality *</label>
+                                <select id="internet" required>
+                                    <option value="" data-i18n="selectInternet">Select...</option>
+                                    <option value="high" data-i18n="internetHigh">High (reliable WiFi)</option>
+                                    <option value="medium" data-i18n="internetMedium">Medium (sometimes slow)</option>
+                                    <option value="low" data-i18n="internetLow">Low (mobile data only)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="supplies" data-i18n="artSuppliesNeeded">What art supplies does your school need most?</label>
+                            <textarea id="supplies" placeholder="Colored pencils, watercolors, thick paper, brushes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="interests" data-i18n="hopeToShare">What do you hope to share with your partner school?</label>
+                            <textarea id="interests" placeholder="We want to share our students' creativity and teach them about our culture..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;" id="submit-btn" data-i18n="registerSchool">Register School</button>
+                    </form>
+
+                    <div class="alt-signup">
+                        <p><span data-i18n="areYouUS">Are you a US school?</span> <a href="signup-us.html" data-i18n="signUpUS">Sign up as a US Partner School</a></p>
+                    </div>
+                </div>
+
+                <!-- Success State (hidden by default) -->
+                <div id="success-container" style="display: none;">
+                    <div class="success-state">
+                        <div class="icon">🎨</div>
+                        <h2 data-i18n="registrationComplete">Registration Complete!</h2>
+                        <p data-i18n="registrationSuccess">Your school has been registered successfully!</p>
+                        <div class="access-code-display">
+                            <p style="font-size: 0.85rem; color: rgba(10,22,40,0.6); margin-bottom: 0.5rem;" data-i18n="yourAccessCode">Your Access Code</p>
+                            <span id="access-code"></span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: rgba(10,22,40,0.6); margin-bottom: 1.5rem;" data-i18n="saveThisCode">Save this code to log in anytime!</p>
+                        <a href="teacher-connect.html" class="btn btn-primary" data-i18n="goToDashboard">Go to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // ============================================
+        // SUPABASE CONNECTION
+        // ============================================
+        
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+        
+        const SUPABASE_URL = 'https://nappgvkeodboaazejile.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable__tl6WQjLJU45lgA8w145xQ_ypOUfBxc';
+        
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ============================================
+        // TRANSLATIONS
+        // ============================================
+
+        const translations = {
+            en: {
+                home: "Home",
+                usSignUp: "US School Sign Up",
+                globalRegTitle: "🌍 Global School Registration",
+                globalRegSubtitle: "Join Color Compass to receive art supplies and connect with a US partner classroom.",
+                schoolName: "School Name *",
+                teacherName: "Teacher Name *",
+                country: "Country *",
+                email: "Email *",
+                gradeLevel: "Grade Level *",
+                selectGrade: "Select grade...",
+                kindergarten: "Kindergarten",
+                grade1: "1st Grade",
+                grade2: "2nd Grade",
+                grade3: "3rd Grade",
+                grade4: "4th Grade",
+                grade5: "5th Grade",
+                grade6: "6th Grade",
+                grade78: "7th-8th Grade",
+                highSchool: "High School",
+                internetQuality: "Internet Quality *",
+                selectInternet: "Select...",
+                internetHigh: "High (reliable WiFi)",
+                internetMedium: "Medium (sometimes slow)",
+                internetLow: "Low (mobile data only)",
+                artSuppliesNeeded: "What art supplies does your school need most?",
+                hopeToShare: "What do you hope to share with your partner school?",
+                registerSchool: "Register School",
+                areYouUS: "Are you a US school?",
+                signUpUS: "Sign up as a US Partner School",
+                registrationComplete: "Registration Complete!",
+                registrationSuccess: "Your school has been registered successfully!",
+                yourAccessCode: "Your Access Code",
+                saveThisCode: "Save this code to log in anytime!",
+                goToDashboard: "Go to Dashboard",
+                registering: "Registering..."
+            },
+            es: {
+                home: "Inicio",
+                usSignUp: "Registro Escuela EE.UU.",
+                globalRegTitle: "🌍 Registro de Escuela Global",
+                globalRegSubtitle: "Únete a Color Compass para recibir materiales artísticos y conectarte con un aula asociada de EE.UU.",
+                schoolName: "Nombre de la Escuela *",
+                teacherName: "Nombre del Maestro/a *",
+                country: "País *",
+                email: "Correo Electrónico *",
+                gradeLevel: "Nivel de Grado *",
+                selectGrade: "Seleccionar grado...",
+                kindergarten: "Jardín de Infantes",
+                grade1: "1er Grado",
+                grade2: "2do Grado",
+                grade3: "3er Grado",
+                grade4: "4to Grado",
+                grade5: "5to Grado",
+                grade6: "6to Grado",
+                grade78: "7mo-8vo Grado",
+                highSchool: "Secundaria",
+                internetQuality: "Calidad de Internet *",
+                selectInternet: "Seleccionar...",
+                internetHigh: "Alta (WiFi confiable)",
+                internetMedium: "Media (a veces lento)",
+                internetLow: "Baja (solo datos móviles)",
+                artSuppliesNeeded: "¿Qué materiales artísticos necesita más tu escuela?",
+                hopeToShare: "¿Qué esperas compartir con tu escuela asociada?",
+                registerSchool: "Registrar Escuela",
+                areYouUS: "¿Eres una escuela de EE.UU.?",
+                signUpUS: "Regístrate como Escuela Asociada de EE.UU.",
+                registrationComplete: "¡Registro Completo!",
+                registrationSuccess: "¡Tu escuela ha sido registrada exitosamente!",
+                yourAccessCode: "Tu Código de Acceso",
+                saveThisCode: "¡Guarda este código para iniciar sesión en cualquier momento!",
+                goToDashboard: "Ir al Panel",
+                registering: "Registrando..."
+            },
+            pt: {
+                home: "Início",
+                usSignUp: "Cadastro Escola EUA",
+                globalRegTitle: "🌍 Cadastro de Escola Global",
+                globalRegSubtitle: "Junte-se ao Color Compass para receber materiais artísticos e conectar-se com uma sala parceira dos EUA.",
+                schoolName: "Nome da Escola *",
+                teacherName: "Nome do Professor(a) *",
+                country: "País *",
+                email: "E-mail *",
+                gradeLevel: "Série *",
+                selectGrade: "Selecionar série...",
+                kindergarten: "Educação Infantil",
+                grade1: "1º Ano",
+                grade2: "2º Ano",
+                grade3: "3º Ano",
+                grade4: "4º Ano",
+                grade5: "5º Ano",
+                grade6: "6º Ano",
+                grade78: "7º-8º Ano",
+                highSchool: "Ensino Médio",
+                internetQuality: "Qualidade da Internet *",
+                selectInternet: "Selecionar...",
+                internetHigh: "Alta (WiFi confiável)",
+                internetMedium: "Média (às vezes lento)",
+                internetLow: "Baixa (apenas dados móveis)",
+                artSuppliesNeeded: "Quais materiais artísticos sua escola mais precisa?",
+                hopeToShare: "O que você espera compartilhar com sua escola parceira?",
+                registerSchool: "Cadastrar Escola",
+                areYouUS: "Você é uma escola dos EUA?",
+                signUpUS: "Cadastre-se como Escola Parceira dos EUA",
+                registrationComplete: "Cadastro Completo!",
+                registrationSuccess: "Sua escola foi cadastrada com sucesso!",
+                yourAccessCode: "Seu Código de Acesso",
+                saveThisCode: "Guarde este código para fazer login a qualquer momento!",
+                goToDashboard: "Ir para o Painel",
+                registering: "Cadastrando..."
+            },
+            fr: {
+                home: "Accueil",
+                usSignUp: "Inscription École USA",
+                globalRegTitle: "🌍 Inscription École Globale",
+                globalRegSubtitle: "Rejoignez Color Compass pour recevoir des fournitures artistiques et vous connecter avec une classe partenaire américaine.",
+                schoolName: "Nom de l'École *",
+                teacherName: "Nom de l'Enseignant(e) *",
+                country: "Pays *",
+                email: "E-mail *",
+                gradeLevel: "Niveau *",
+                selectGrade: "Sélectionner le niveau...",
+                kindergarten: "Maternelle",
+                grade1: "CP",
+                grade2: "CE1",
+                grade3: "CE2",
+                grade4: "CM1",
+                grade5: "CM2",
+                grade6: "6ème",
+                grade78: "5ème-4ème",
+                highSchool: "Lycée",
+                internetQuality: "Qualité Internet *",
+                selectInternet: "Sélectionner...",
+                internetHigh: "Haute (WiFi fiable)",
+                internetMedium: "Moyenne (parfois lent)",
+                internetLow: "Basse (données mobiles uniquement)",
+                artSuppliesNeeded: "De quelles fournitures artistiques votre école a-t-elle le plus besoin?",
+                hopeToShare: "Qu'espérez-vous partager avec votre école partenaire?",
+                registerSchool: "Inscrire l'École",
+                areYouUS: "Êtes-vous une école américaine?",
+                signUpUS: "Inscrivez-vous comme École Partenaire USA",
+                registrationComplete: "Inscription Terminée!",
+                registrationSuccess: "Votre école a été inscrite avec succès!",
+                yourAccessCode: "Votre Code d'Accès",
+                saveThisCode: "Gardez ce code pour vous connecter à tout moment!",
+                goToDashboard: "Aller au Tableau de Bord",
+                registering: "Inscription..."
+            },
+            sw: {
+                home: "Nyumbani",
+                usSignUp: "Sajili Shule ya Marekani",
+                globalRegTitle: "🌍 Usajili wa Shule ya Kimataifa",
+                globalRegSubtitle: "Jiunge na Color Compass kupokea vifaa vya sanaa na kuunganishwa na darasa la mshirika la Marekani.",
+                schoolName: "Jina la Shule *",
+                teacherName: "Jina la Mwalimu *",
+                country: "Nchi *",
+                email: "Barua pepe *",
+                gradeLevel: "Kiwango cha Daraja *",
+                selectGrade: "Chagua daraja...",
+                kindergarten: "Chekechea",
+                grade1: "Darasa la 1",
+                grade2: "Darasa la 2",
+                grade3: "Darasa la 3",
+                grade4: "Darasa la 4",
+                grade5: "Darasa la 5",
+                grade6: "Darasa la 6",
+                grade78: "Darasa la 7-8",
+                highSchool: "Sekondari",
+                internetQuality: "Ubora wa Mtandao *",
+                selectInternet: "Chagua...",
+                internetHigh: "Juu (WiFi ya kuaminika)",
+                internetMedium: "Wastani (wakati mwingine polepole)",
+                internetLow: "Chini (data ya simu tu)",
+                artSuppliesNeeded: "Shule yako inahitaji vifaa vipi vya sanaa zaidi?",
+                hopeToShare: "Unatumai kushiriki nini na shule yako mshirika?",
+                registerSchool: "Sajili Shule",
+                areYouUS: "Je, wewe ni shule ya Marekani?",
+                signUpUS: "Jisajili kama Shule Mshirika ya Marekani",
+                registrationComplete: "Usajili Umekamilika!",
+                registrationSuccess: "Shule yako imesajiliwa kwa mafanikio!",
+                yourAccessCode: "Msimbo Wako wa Kufikia",
+                saveThisCode: "Hifadhi msimbo huu kuingia wakati wowote!",
+                goToDashboard: "Nenda kwenye Dashibodi",
+                registering: "Inasajili..."
+            }
+        };
+
+        let currentLanguage = localStorage.getItem('preferred_language') || 'en';
+
+        function t(key) {
+            return translations[currentLanguage]?.[key] || translations['en'][key] || key;
+        }
+
+        function applyTranslations() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const translation = t(key);
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                    el.placeholder = translation;
+                } else if (el.tagName === 'OPTION') {
+                    el.textContent = translation;
+                } else {
+                    el.innerHTML = translation;
+                }
+            });
+        }
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('preferred_language', lang);
+            applyTranslations();
+        }
+
+        // Generate access code
+        function generateAccessCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 8; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${type === 'success' ? '✓' : '✕'}</span> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // Show alert in form
+        function showAlert(message, type = 'error') {
+            const alertDiv = document.getElementById('register-alert');
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+        }
+
+        // Handle registration
+        async function handleRegister(event) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span> ' + t('registering');
+
+            const accessCode = generateAccessCode();
+
+            const schoolData = {
+                access_code: accessCode,
+                school_type: 'global',
+                school_name: document.getElementById('school-name').value,
+                teacher_name: document.getElementById('teacher-name').value,
+                teacher_email: document.getElementById('teacher-email').value,
+                grade_level: document.getElementById('grade').value,
+                country: document.getElementById('country').value,
+                state: null,
+                internet_quality: document.getElementById('internet').value,
+                supply_needs: document.getElementById('supplies').value || null,
+                interests: document.getElementById('interests').value || null,
+                partner_id: null,
+                partnership_id: null
+            };
+
+            try {
+                // Insert into Supabase
+                const { data, error } = await supabase
+                    .from('tc_schools')
+                    .insert([schoolData])
+                    .select();
+
+                if (error) {
+                    throw error;
+                }
+
+                // Store in localStorage for session management
+                if (data && data[0]) {
+                    localStorage.setItem('current_school_id', data[0].id);
+                    localStorage.setItem('current_access_code', accessCode);
+                }
+
+                // Show success state
+                document.getElementById('form-container').style.display = 'none';
+                document.getElementById('success-container').style.display = 'block';
+                document.getElementById('access-code').textContent = accessCode;
+
+                showToast(t('registrationSuccess'), 'success');
+
+            } catch (error) {
+                console.error('Registration error:', error);
+                showAlert('Registration failed: ' + error.message, 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = t('registerSchool');
+            }
+        }
+
+        // Initialize
+        function init() {
+            // Setup language selector
+            const langSelect = document.getElementById('language-select');
+            langSelect.addEventListener('change', function() {
+                changeLanguage(this.value);
+            });
+
+            // Load saved language
+            const savedLang = localStorage.getItem('preferred_language');
+            if (savedLang) {
+                currentLanguage = savedLang;
+                langSelect.value = savedLang;
+            }
+
+            applyTranslations();
+
+            // Attach form event listener
+            document.getElementById('register-form').addEventListener('submit', handleRegister);
+        }
+
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
